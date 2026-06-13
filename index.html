@@ -133,14 +133,16 @@
   let isPlaying = false
   let bgAudio = null
 
-  // Когда видео готово — показываем его поверх постера
+  // Все видео запускаем muted сразу для прогрева — браузер не блокирует muted autoplay
   ['thunder', 'train', 'cat'].forEach(id => {
     const vid = document.getElementById('vid-' + id)
     if (!vid) return
     vid.addEventListener('canplay', () => {
-      vid.classList.add('active')
-      const poster = document.getElementById('poster-' + id)
-      if (poster) poster.style.transition = 'opacity 1s ease'
+      vid.play().then(() => {
+        // Паузим все кроме текущего активного
+        if (id !== current) vid.pause()
+        vid.classList.add('active')
+      }).catch(() => {})
     }, { once: true })
   })
 
